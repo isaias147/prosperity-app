@@ -342,7 +342,7 @@ export default function App() {
     const twoAgo = new Date(); twoAgo.setDate(twoAgo.getDate() - 2);
     const tk = twoAgo.toISOString().split("T")[0];
     const graceShown = lsGet("grace_shown", "");
-    if (!checkins[yk] && !checkins[tk] && Object.keys(checkins).length > 0 && graceShown !== todayKey()) {
+    if (!checkins[yk] && !checkins[tk] && Object.keys(checkins).length >= 3 && graceShown !== todayKey()) {
       setGraceType("streak"); setShowGrace(true); lsSet("grace_shown", todayKey());
     }
   }, [checkins, loaded]);
@@ -378,9 +378,9 @@ export default function App() {
   // Handlers
   const setCheck = (id, val) => {
     setCheckins(p => ({ ...p, [todayKey()]: { ...p[todayKey()], [id]: { ...p[todayKey()]?.[id], done: val } } }));
-    const failCount = ALL_IDS.filter(id2 => td[id2]?.done === false).length;
+    const newFailCount = ALL_IDS.filter(id2 => (id2 === id ? val === false : td[id2]?.done === false)).length;
     const graceShown = lsGet("grace_shown", "");
-    if (val === false && failCount >= 4 && graceShown !== todayKey()) {
+    if (newFailCount >= 5 && graceShown !== todayKey()) {
       setGraceType("discipline"); setShowGrace(true); lsSet("grace_shown", todayKey());
     }
   };
